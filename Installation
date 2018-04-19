@@ -1,0 +1,179 @@
+##installing Moinmoin on Ubuntu 
+#Juan Angel 
+#CSCI 2461-70
+
+##Requirements
+
+ A server running Ubuntu 16.04.
+ A non-root user with sudo privileges configure on your server.
+-----------------------------------------------------------
+
+##Update system 
+
+sudo apt-get update -y sudo apt-get upgrade -y
+-----------------------------------------------------------
+##Installing uWSGI
+
+sudo apt-get install python-pip python-dev
+-----------------------------------------------------------
+##Once pip is installed, you can install the latest stable release of uWSGI by using the following pip command:
+
+sudo pip install http://projects.unbit.it/downloads/uwsgi-lts.tar.gz
+-----------------------------------------------------------
+##Downloading and Installing MoinMoin
+
+You can find the latest version of the MoinMoin from the URL "https://moinmo.in/MoinMoinDownloa"
+-----------------------------------------------------------
+##to download it, run the following command:
+
+wget http://static.moinmo.in/files/moin-1.9.9.tar.gz
+-----------------------------------------------------------
+##Once download is completed, extract the the MoinMoin archive with the following command:
+
+tar -zxvf moin-1.9.9.tar.gz
+
+#Next, change the directory to moin-1.9.9:
+
+cd moin-1.9.9
+
+#Next, you will need to build the MoinMoin Python application.
+#To do so run the following command:
+
+sudo python setup.py install --prefix=/usr/local
+
+# The above command will install the MoinMoin to /usr/local/lib/python2.7/dist-packages/ and /usr/local/share/moin directory.
+----------------------------------------------------------
+
+##Configuring MoinMoin
+
+Before starting, you will need to copy the sample server configuration file moin.wsgi.
+
+To do so, change the directory to /usr/local/share/moin:
+cd /usr/local/share/moin
+
+#Then copy the sample server configuration file:
+
+sudo cp server/moin.wsgi .
+
+#Next, you will need to make some changes in moin.wsgi file:
+
+sudo nano moin.wsgi
+
+#Add the following lines below the import sys, os line:
+
+sys.path.insert(0, '/usr/local/lib/python2.7/dist-packages/')
+sys.path.insert(0, '/usr/local/share/moin/')
+
+#Save and exit the file.
+
+#Next, you will need to create a uwsgi.ini file:
+
+sudo nano uwsgi.ini
+
+#Add the following lines:
+
+[uwsgi]
+uid = www-data
+gid = www-data
+socket = /usr/local/share/moin/moin.sock
+chmod-socket = 660
+logto = /var/log/uwsgi/uwsgi.logchdir = /usr/local/share/moin/
+wsgi-file = moin.wsgimaster
+workers = 3
+max-requests = 200
+harakiri = 30
+die-on-term
+
+#Next, create the log directory for storing the uWSGI application logs:
+
+sudo mkdir -p /var/log/uwsgi sudo chown www-data /var/log/uwsgi
+
+#Next, you will need to create an initctl script to start the MoinMoin application at boot time.
+
+#To do so, create a new moin.conf file with the following command:
+
+sudo nano /etc/init/moin.conf
+
+#Add the following lines:
+
+description "moin uwsgi service"start on runlevel [2345]
+stop on runlevel [!2345]chdir /usr/local/share/moin
+exec /usr/local/bin/uwsgi /usr/local/share/moin/uwsgi.ini
+respawn
+
+#Save and close the file when you are finished.
+----------------------------------------------------------
+
+##Configuring Wiki
+
+#Next, you will need to configure Wiki for MoinMoin. First, change the directory to /usr/local/share/moin:
+
+cd /usr/local/share/moin
+
+#Then, copy sample wikiconfig.py file:
+
+sudo cp config/wikiconfig.py .
+
+#Next, you will need to make some changes in wikiconfig.py file:
+
+sudo nano wikiconfig.py
+
+Change following lines:
+
+ sitename = u'My  Wiki'page_front_page = u"FrontPage"
+superuser = [u"Admin", ] 
+
+#Next, change the ownership and permissions of the MoinMoin directories:
+
+sudo chown -R www-data: /usr/local/share/moin sudo chmod -R 775 /usr/local/share/moin
+
+#Now, start the uWSGI application server with the following command:
+
+sudo start moin
+
+#Now, MoinMoin application server is up and running.
+-------------------------------------------------------
+##Installing and Configuring Nginx
+
+#Before using MoinMoin application, you will need to install Nginx server.
+#You can install Nginx with the following command:
+
+sudo apt-get install nginx-core
+
+Once Nginx is installed, create a configuration file for MoinMoin:
+sudo nano /etc/nginx/sites-available/moin
+
+Add the following lines:
+
+server {
+    server_name wiki.test.com;access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+location / { include uwsgi_params; uwsgi_pass unix:///usr/local/share/moin/moin.sock; uwsgi_modifier1 30; } } 
+
+#Save the file when you are done, then create a symbolic link of this file to /etc/nginx/sites-enabled directory 
+#and And delete the symbolic link to the default:
+
+sudo ln -s /etc/nginx/sites-available/moin /etc/nginx/sites-enabled/ sudo rm -rf /etc/nginx/sites-enabled/default
+
+#Now, restart the Nginx service with the following command:
+
+sudo /etc/init.d/nginx restart
+
+#Once nginx is configured, you can proceed to next step.
+------------------------------------------------------------------
+
+##Acessing wiki
+
+#Once everything is up to date, it's time to access MoinMoin Application.
+#Open your favourite web browser and type the URL http://your-ip-address or http://wiki.test.com, 
+#you should see the following front page:
+
+#Next, click on the "Login" button at the top of the page:
+
+#At the Login page, click the "you can create one now":
+
+#Next, enter your wiki admin user name, password and email address, then click the "Create Profile" button.
+
+#If all is well, you should see the following success message:
+
+**Finally you have successfully install and configure MoinMoin Wiki on your server.**
