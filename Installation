@@ -4,8 +4,8 @@
 
 ##Requirements
 
- A server running Ubuntu 16.04.
- A non-root user with sudo privileges configure on your server.
+\\A server running Ubuntu 16.04.
+\\ A non-root user with sudo privileges configure on your server.
  
  
 -----------------------------------------------------------
@@ -37,7 +37,7 @@ sudo pip install http://projects.unbit.it/downloads/uwsgi-lts.tar.gz
 
 ##Downloading and Installing MoinMoin
 
-You can find the latest version of the MoinMoin from the URL "https://moinmo.in/MoinMoinDownloa"
+#You can find the latest version of the MoinMoin from the URL "https://moinmo.in/MoinMoinDownloa"
 
 
 -----------------------------------------------------------
