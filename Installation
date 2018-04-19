@@ -6,28 +6,51 @@
 
  A server running Ubuntu 16.04.
  A non-root user with sudo privileges configure on your server.
+ 
+ 
 -----------------------------------------------------------
+
 
 ##Update system 
 
 sudo apt-get update -y sudo apt-get upgrade -y
+
+
 -----------------------------------------------------------
+
+
 ##Installing uWSGI
 
 sudo apt-get install python-pip python-dev
+
+
 -----------------------------------------------------------
+
+
 ##Once pip is installed, you can install the latest stable release of uWSGI by using the following pip command:
 
 sudo pip install http://projects.unbit.it/downloads/uwsgi-lts.tar.gz
+
+
 -----------------------------------------------------------
+
+
 ##Downloading and Installing MoinMoin
 
 You can find the latest version of the MoinMoin from the URL "https://moinmo.in/MoinMoinDownloa"
+
+
 -----------------------------------------------------------
+
+
 ##to download it, run the following command:
 
 wget http://static.moinmo.in/files/moin-1.9.9.tar.gz
+
+
 -----------------------------------------------------------
+
+
 ##Once download is completed, extract the the MoinMoin archive with the following command:
 
 tar -zxvf moin-1.9.9.tar.gz
@@ -42,7 +65,10 @@ cd moin-1.9.9
 sudo python setup.py install --prefix=/usr/local
 
 # The above command will install the MoinMoin to /usr/local/lib/python2.7/dist-packages/ and /usr/local/share/moin directory.
+
+
 ----------------------------------------------------------
+
 
 ##Configuring MoinMoin
 
@@ -102,7 +128,10 @@ exec /usr/local/bin/uwsgi /usr/local/share/moin/uwsgi.ini
 respawn
 
 #Save and close the file when you are finished.
+
+
 ----------------------------------------------------------
+
 
 ##Configuring Wiki
 
@@ -118,7 +147,7 @@ sudo cp config/wikiconfig.py .
 
 sudo nano wikiconfig.py
 
-Change following lines:
+#Change following lines:
 
  sitename = u'My  Wiki'page_front_page = u"FrontPage"
 superuser = [u"Admin", ] 
@@ -132,7 +161,11 @@ sudo chown -R www-data: /usr/local/share/moin sudo chmod -R 775 /usr/local/share
 sudo start moin
 
 #Now, MoinMoin application server is up and running.
+
+
 -------------------------------------------------------
+
+
 ##Installing and Configuring Nginx
 
 #Before using MoinMoin application, you will need to install Nginx server.
@@ -160,7 +193,10 @@ sudo ln -s /etc/nginx/sites-available/moin /etc/nginx/sites-enabled/ sudo rm -rf
 sudo /etc/init.d/nginx restart
 
 #Once nginx is configured, you can proceed to next step.
+
+
 ------------------------------------------------------------------
+
 
 ##Acessing wiki
 
